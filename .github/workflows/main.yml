@@ -10,20 +10,25 @@ jobs:
       - name: Baixar codigo do repositorio
         uses: actions/checkout@v4
 
-      - name: Instalar Java e ferramentas Android
+      - name: Instalar Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Instalar dependencias do sistema e Buildozer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev uuid-dev lld
+          pip3 install buildozer cython virtualenv --break-system-packages
+
       - name: Compilar APK com Buildozer
-        uses: ArtemisAnatol/buildozer-action@v1
-        with:
-          command: buildozer android debug
-          repository_root: .
+        run: |
+          yes | buildozer android debug
 
       - name: Disponibilizar APK para Download
         uses: actions/upload-artifact@v4
         with:
           name: meu-aplicativo-debug
           path: ./.buildozer/android/app/build/outputs/apk/debug/*.apk
+          
