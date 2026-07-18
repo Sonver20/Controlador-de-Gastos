@@ -16,11 +16,19 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Configurar Python Estavel (3.11)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Instalar ferramentas de compilacao do sistema
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential ccache cmake git libffi-dev libssl-dev python3-dev zip unzip lld libncurses-dev autoconf libtool pkg-config zlib1g-dev gawk patch
-          pip3 install --upgrade pip setuptools wheel virtualenv "cython<3.0" buildozer --break-system-packages
+          sudo apt-get install -y build-essential ccache cmake git libffi-dev libssl-dev zip unzip lld libncurses-dev autoconf libtool pkg-config zlib1g-dev gawk patch
+
+      - name: Instalar Buildozer e Cython de forma isolada
+        run: |
+          pip install --upgrade pip setuptools wheel virtualenv "cython<3.0" buildozer
 
       - name: Compilar APK com Buildozer (Modo Verbose)
         run: |
