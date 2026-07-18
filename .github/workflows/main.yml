@@ -16,15 +16,15 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Instalar dependencias do sistema e Buildozer
+      - name: Instalar ferramentas de compilacao do sistema (Completo)
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev uuid-dev lld
-          pip3 install buildozer cython virtualenv --break-system-packages
+          sudo apt-get install -y build-essential ccache cmake git libffi-dev libssl-dev python3-dev zip unzip lld libncurses5 libtinfo5 autoconf libtool pkg-config zlib1g-dev gawk
+          pip3 install --upgrade pip setuptools wheel virtualenv cython buildozer --break-system-packages
 
-      - name: Compilar APK com Buildozer
+      - name: Compilar APK com Buildozer (Modo Verbose)
         run: |
-          yes | buildozer android debug
+          yes | buildozer -v android debug
 
       - name: Disponibilizar APK para Download
         uses: actions/upload-artifact@v4
