@@ -1,0 +1,6 @@
+{
+    "com.nu.production": "compra aprovada no (?P<store>.*?):?\\s*r\\$\\s*(?P<value>[\\d,.]+)",
+    "br.com.itau": "itaucard:\\s*compra aprovada no (?P<store>.*?)\\s+valor\\s+r\\$\\s*(?P<value>[\\d,.]+)",
+    "com.itau.production": "compra aprovada de\\s*r\\$\\s*(?P<value>[\\d,.]+)\\s+na\\s+(?P<store>.*)",
+    "com.intermedium": "inter:\\s*compra no (?P<store>.*?)\\s+de\\s+r\\$\\s*(?P<value>[\\d,.]+)"
+}
