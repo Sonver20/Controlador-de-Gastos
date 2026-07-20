@@ -10,6 +10,26 @@ from kivymd.uix.dialog import MDDialog
 from database import Database
 from notification_processor import NotificationProcessor
 from kivymd.uix.screen import MDScreen
+from kivy.utils import platform
+if platform == 'android':
+    from jnius import autoclass
+
+# ... (seu código existente) ...
+
+class TelaConfiguracoes(MDScreen):
+    def abrir_permissao_android(self):
+        if platform == 'android':
+            try:
+                Intent = autoclass('android.content.Intent')
+                Settings = autoclass('android.provider.Settings')
+                intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                PythonActivity = autoclass('org.kivy.android.PythonActivity')
+                activity = PythonActivity.mActivity
+                activity.startActivity(intent)
+            except Exception as e:
+                print(f"Erro ao abrir permissão: {e}")
+        else:
+            print("Configuração de permissão apenas no Android.")
 
 class TelaTestadorNotificacao(MDScreen):
     def __init__(self, **kwargs):
@@ -213,6 +233,7 @@ class ControladorGastos(MDApp):
         self.sm.add_widget(TelaCadastroMassa(name='cadastro_massa'))
         self.sm.add_widget(TelaVisualizacao(name='visualizacao'))
         self.sm.add_widget(TelaTestadorNotificacao(name='testador_notificacao'))
+        self.sm.add_widget(TelaConfiguracoes(name='configuracoes'))
         
         self.menu = None
         return self.sm
@@ -248,4 +269,9 @@ class ControladorGastos(MDApp):
         self.stop()
 
 if __name__ == '__main__':
-    ControladorGastos().run()
+    try:
+        ControladorGastos().run()
+    except Exception as e:
+        import traceback
+        with open('erro_real.txt', 'w') as f:
+            traceback.print_exc(file=f)

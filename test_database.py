@@ -2,6 +2,22 @@ import os
 import datetime
 import pytest
 from database import Database
+from qrcode_parser import QRCodeParser
+
+def test_extrair_chave_sefaz_real():
+    parser = QRCodeParser()
+    
+    # Exemplo de URL real que a SEFAZ gera no QR Code (Simulada com chave válida de 44 dígitos)
+    url_fake_sefaz = "https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx?p=43260790245579000108650010002598341123456789|2|1|1|CBE2A"
+    
+    chave_extraida = parser.extrair_chave(url_fake_sefaz)
+    
+    assert chave_extraida == "43260790245579000108650010002598341123456789"
+    
+    # Valida se a decomposição da chave está correta
+    dados = parser.extrair_dados_da_chave(chave_extraida)
+    assert dados["ano_mes"] == "2026-07"
+    assert dados["cnpj_emitente"] == "90245579000108"
 
 @pytest.fixture
 def db_teste(tmp_path):

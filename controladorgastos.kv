@@ -1,3 +1,4 @@
+
 <MenuLateral>:
     title: ""
     title_size: 0
@@ -10,6 +11,13 @@
         orientation: 'vertical'
         padding: [20, 30, 20, 20]
         spacing: 20
+        
+        MDRaisedButton:
+            text: "Permissões"
+            size_hint_x: 1
+            height: "48dp"
+            on_release: root.dismiss(); app.mudar_tela('configuracoes')
+
         
 # ... dentro do MDBoxLayout do <MenuLateral> ...
         MDRaisedButton:
@@ -344,3 +352,25 @@
             
             Widget:
                 size_hint_y: 1
+                
+<TelaConfiguracoes>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: "20dp"
+        spacing: "20dp"
+        
+        MDLabel:
+            text: "Permissões de Sistema"
+            font_style: "H5"
+            halign: "center"
+            
+        MDRaisedButton:
+            text: "Autorizar Leitura de Notificações"
+            size_hint_x: 1
+            height: "50dp"
+            on_release: root.abrir_permissao_android()
+            
+        MDRaisedButton:
+            text: "Voltar"
+            size_hint_x: 1
+            on_release: app.mudar_tela('visualizacao') # Ou a tela inicial
