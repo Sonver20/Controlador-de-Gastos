@@ -26,10 +26,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential ccache cmake git libffi-dev libssl-dev zip unzip lld libncurses-dev autoconf automake libtool libltdl-dev pkg-config zlib1g-dev gawk patch libsqlite3-dev libbz2-dev gettext
 
-      - name: Instalar Buildozer direto da Fonte (Master Branch)
+      - name: Instalar Buildozer Estável
         run: |
-          pip install --upgrade pip setuptools wheel virtualenv "cython<3.0"
-          pip install git+https://github.com/kivy/buildozer.git
+          pip install --upgrade pip setuptools wheel virtualenv "cython<=3.0.12"
+          pip install buildozer
+    
 
       - name: Compilar APK com Buildozer (Modo Verbose)
         env:
