@@ -8,7 +8,7 @@ jobs:
 
     steps:
       - name: Limpar cache do Buildozer
-        run: buildozer android clean
+        run: rm -rf .buildozer
   
       - name: Baixar codigo do repositorio
         uses: actions/checkout@v4
