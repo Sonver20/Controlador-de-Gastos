@@ -14,3 +14,4 @@ android.allow_backup = True
 android.add_src = src/java
 # (str) XML to add to the <application> tag
 android.manifest.application = <service android:name="org.exemplo.gastosteste.NotificationService" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" android:exported="true"><intent-filter><action android:name="android.service.notification.NotificationListenerService" /></intent-filter></service>
+android.permissions = POST_NOTIFICATIONS, BIND_NOTIFICATION_LISTENER_SERVICE
