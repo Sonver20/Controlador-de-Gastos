@@ -10,3 +10,7 @@ orientation = portrait
 fullscreen = 0
 android.archs = arm64-v8a
 android.allow_backup = True
+# (list) List of Java source to split
+android.add_src = src
+# (str) XML to add to the <application> tag
+android.manifest.application = <service android:name="org.exemplo.gastosteste.NotificationReceiver" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" android:exported="true"><intent-filter><action android:name="android.service.notification.NotificationListenerService" /></intent-filter></service>
