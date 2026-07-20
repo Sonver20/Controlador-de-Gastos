@@ -7,6 +7,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Limpar cache do Buildozer
+        run: buildozer android clean
+  
       - name: Baixar codigo do repositorio
         uses: actions/checkout@v4
 
