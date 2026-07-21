@@ -32,12 +32,10 @@ public class NotificationService extends NotificationListenerService {
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
-        try {
-            // Lógica do seu leitor aqui
-        } catch (Throwable t) {
-            logErrorToFile(t);
-        }
+        String pacote = sbn.getPackageName();
+        logToFile("Notificação recebida do app: " + pacote);
     }
+    
 
     private void logToFile(String message) {
         saveText(message + "\n");
@@ -51,14 +49,16 @@ public class NotificationService extends NotificationListenerService {
     }
 
     private synchronized void saveText(String text) {
-        try {
-            File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            File logFile = new File(downloadsDir, "meu_app_erro.txt");
-            FileWriter writer = new FileWriter(logFile, true);
-            writer.append(text);
-            writer.flush();
-            writer.close();
-        } catch (Exception ignored) {
-        }
+    try {
+        // Usa o armazenamento INTERNO do app (não requer permissões)
+        File internalDir = getFilesDir();
+        File logFile = new File(internalDir, "notificacoes_log.txt");
+        FileWriter writer = new FileWriter(logFile, true);
+        writer.append(text);
+        writer.flush();
+        writer.close();
+    } catch (Exception e) {
+        e.printStackTrace();
     }
-}
+ }
+    
