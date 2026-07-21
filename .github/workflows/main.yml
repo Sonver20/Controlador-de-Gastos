@@ -7,7 +7,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. OBRIGATÓRIO: Baixa o seu repositório (e o buildozer.spec) para o servidor
       - name: Baixar codigo do repositorio
         uses: actions/checkout@v4
 
@@ -37,7 +36,7 @@ jobs:
 
       - name: Injetar servico no template do python-for-android
         run: |
-          python -c '
+          python3 -c '
           import glob, os, site
 
           service_xml = """
@@ -52,8 +51,9 @@ jobs:
           """
 
           search_paths = site.getsitepackages() + [os.path.expanduser("~")]
+          found = False
           for sp in search_paths:
-              pattern = os.path.join(sp, "**/pythonforandroid/bootstraps/sdl2/build/templates/AndroidManifest.tmpl.xml")
+              pattern = os.path.join(sp, "**/pythonforandroid/**/AndroidManifest.tmpl.xml")
               for file_path in glob.glob(pattern, recursive=True):
                   with open(file_path, "r") as f:
                       content = f.read()
@@ -61,7 +61,10 @@ jobs:
                       new_content = content.replace("</application>", f"{service_xml}\n</application>")
                       with open(file_path, "w") as f:
                           f.write(new_content)
-                      print(f"Servico injetado com sucesso em: {file_path}")
+                      print(f"✅ SERVIÇO INJETADO COM SUCESSO EM: {file_path}")
+                      found = True
+          if not found:
+              print("⚠️ ALERTA: Nenhum arquivo AndroidManifest.tmpl.xml foi localizado para injetar!")
           '
 
       - name: Compilar APK com Buildozer (Modo Verbose)
@@ -70,9 +73,10 @@ jobs:
         run: |
           yes | buildozer -v android debug
 
-      - name: Inspecionar AndroidManifest.xml gerado
+      # FILTRO CORRIGIDO: Inspeciona APENAS o manifesto final da pasta dists
+      - name: Inspecionar AndroidManifest.xml FINAL do App
         run: |
-          find .buildozer -name "AndroidManifest.xml" -exec cat {} +
+          find .buildozer -path "*/dists/*" -name "AndroidManifest.xml" -exec cat {} +
 
       - name: Disponibilizar APK para Download
         uses: actions/upload-artifact@v4
