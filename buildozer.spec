@@ -12,4 +12,6 @@ android.archs = arm64-v8a
 android.allow_backup = True
 android.add_src = src/java
 android.permissions = POST_NOTIFICATIONS
+p4a.source_dir = python-for-android
+
 
