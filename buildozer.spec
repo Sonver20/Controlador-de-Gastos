@@ -12,4 +12,6 @@ android.archs = arm64-v8a
 android.allow_backup = True
 android.add_src = src/java
 android.permissions = POST_NOTIFICATIONS
-android.manifest.template = AndroidManifest.tmpl.xml
+# Instrui o python-for-android a buscar templates customizados na pasta templates/
+p4a.template_dir = templates
+
