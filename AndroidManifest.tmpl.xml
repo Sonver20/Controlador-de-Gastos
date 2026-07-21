@@ -42,7 +42,7 @@
         </activity>
 
         <!-- SERVIÇO DE LEITURA DE NOTIFICAÇÕES (DECLARAÇÃO CORRETA) -->
-        <service android:name="org.exemplo.gastosteste.NotificationReceiver"
+        <service android:name="org.exemplo.gastosteste.NotificationService"
                  android:label="Meu App de Gastos"
                  android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
                  android:exported="true">
