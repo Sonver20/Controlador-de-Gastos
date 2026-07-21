@@ -7,6 +7,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Inspecionar AndroidManifest.xml gerado
+        run: |
+          find .buildozer -name "AndroidManifest.xml" -exec cat {} +
+    
       - name: Limpar cache do Buildozer
         run: rm -rf .buildozer
   
