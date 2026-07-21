@@ -7,55 +7,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Baixa o código do seu repositório para a máquina virtual
-      - name: Baixar codigo do repositorio
-        uses: actions/checkout@v4
-
-      # 2. Configura o Java 17
-      - name: Instalar Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      # 3. Configura o Python 3.11
-      - name: Configurar Python Estavel (3.11)
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      # 4. Instala dependências do Linux
-      - name: Instalar ferramentas de compilacao do sistema
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential ccache cmake git libffi-dev libssl-dev zip unzip lld libncurses-dev autoconf automake libtool libltdl-dev pkg-config zlib1g-dev gawk patch libsqlite3-dev libbz2-dev gettext
-
-      # 5. Garante que não há cache corrompido de compilações anteriores
-      - name: Limpar cache antigo do Buildozer
-        run: rm -rf .buildozer
-
-      # 6. Instala o Buildozer e o Cython
+      # 1. Instala o Buildozer
       - name: Instalar Buildozer Estável
         run: |
           pip install --upgrade pip setuptools wheel virtualenv "cython<=3.0.12"
           pip install buildozer
 
-      # 7. Compila o APK (A pasta .buildozer é criada AQUI)
+      # 2. NOVO PASSO: Injeta o serviço nativo diretamente no template do p4a
+      - name: Injetar servico no template do python-for-android
+        run: |
+          python -c '
+          import glob, os, site
+
+          service_xml = """
+          <service android:name="org.exemplo.gastosteste.NotificationReceiver"
+                   android:label="Meu App de Gastos"
+                   android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+                   android:exported="true">
+              <intent-filter>
+                  <action android:name="android.service.notification.NotificationListenerService" />
+              </intent-filter>
+          </service>
+          """
+
+          # Busca o template original em todas as pastas do pythonforandroid
+          search_paths = site.getsitepackages() + [os.path.expanduser("~")]
+          for sp in search_paths:
+              pattern = os.path.join(sp, "**/pythonforandroid/bootstraps/sdl2/build/templates/AndroidManifest.tmpl.xml")
+              for file_path in glob.glob(pattern, recursive=True):
+                  with open(file_path, "r") as f:
+                      content = f.read()
+                  if "</application>" in content and "NotificationReceiver" not in content:
+                      new_content = content.replace("</application>", f"{service_xml}\n</application>")
+                      with open(file_path, "w") as f:
+                          f.write(new_content)
+                      print(f"Servico injetado com sucesso em: {file_path}")
+          '
+
+      # 3. Compila o APK (Agore com o template alterado na raiz)
       - name: Compilar APK com Buildozer (Modo Verbose)
         env:
           CFLAGS: "-Wno-error=incompatible-pointer-types"
         run: |
           yes | buildozer -v android debug
-
-      # 8. EXIBE O MANIFESTO (Executado IMEDIATAMENTE após a compilação)
-      - name: Inspecionar AndroidManifest.xml gerado
-        run: |
-          find .buildozer -name "AndroidManifest.xml" -exec cat {} +
-
-      # 9. Disponibiliza o APK gerado para download
-      - name: Disponibilizar APK para Download
-        uses: actions/upload-artifact@v4
-        with:
-          name: meu-aplicativo-debug
-          path: bin/*.apk
           
