@@ -7,13 +7,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Instala o Buildozer
+      # 1. OBRIGATÓRIO: Baixa o seu repositório (e o buildozer.spec) para o servidor
+      - name: Baixar codigo do repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar Python Estavel (3.11)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar ferramentas de compilacao do sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ccache cmake git libffi-dev libssl-dev zip unzip lld libncurses-dev autoconf automake libtool libltdl-dev pkg-config zlib1g-dev gawk patch libsqlite3-dev libbz2-dev gettext
+
+      - name: Limpar cache antigo do Buildozer
+        run: rm -rf .buildozer
+
       - name: Instalar Buildozer Estável
         run: |
           pip install --upgrade pip setuptools wheel virtualenv "cython<=3.0.12"
           pip install buildozer
 
-      # 2. NOVO PASSO: Injeta o serviço nativo diretamente no template do p4a
       - name: Injetar servico no template do python-for-android
         run: |
           python -c '
@@ -30,7 +51,6 @@ jobs:
           </service>
           """
 
-          # Busca o template original em todas as pastas do pythonforandroid
           search_paths = site.getsitepackages() + [os.path.expanduser("~")]
           for sp in search_paths:
               pattern = os.path.join(sp, "**/pythonforandroid/bootstraps/sdl2/build/templates/AndroidManifest.tmpl.xml")
@@ -44,10 +64,19 @@ jobs:
                       print(f"Servico injetado com sucesso em: {file_path}")
           '
 
-      # 3. Compila o APK (Agore com o template alterado na raiz)
       - name: Compilar APK com Buildozer (Modo Verbose)
         env:
           CFLAGS: "-Wno-error=incompatible-pointer-types"
         run: |
           yes | buildozer -v android debug
+
+      - name: Inspecionar AndroidManifest.xml gerado
+        run: |
+          find .buildozer -name "AndroidManifest.xml" -exec cat {} +
+
+      - name: Disponibilizar APK para Download
+        uses: actions/upload-artifact@v4
+        with:
+          name: meu-aplicativo-debug
+          path: bin/*.apk
           
