@@ -36,11 +36,20 @@ jobs:
         run: |
           git clone https://github.com/kivy/python-for-android.git python-for-android
 
-      # 2. Injeta o servico no template clonado
+            # 2. Injeta o servico buscando o template dinamicamente na pasta clonada
       - name: Injetar servico no template do p4a
         run: |
           python3 -c '
-          file_path = "python-for-android/pythonforandroid/bootstraps/sdl2/build/templates/AndroidManifest.tmpl.xml"
+          import glob, os
+
+          # Busca dinamicamente qualquer arquivo de template no p4a clonado
+          pattern = "python-for-android/**/AndroidManifest.tmpl.xml"
+          files = glob.glob(pattern, recursive=True)
+
+          if not files:
+              print("❌ ERRO: Nenhum AndroidManifest.tmpl.xml foi encontrado na pasta python-for-android!")
+              exit(1)
+
           service_xml = """
                   <service android:name="org.exemplo.gastosteste.NotificationReceiver"
                            android:label="Meu App de Gastos"
@@ -51,16 +60,16 @@ jobs:
                       </intent-filter>
                   </service>
           """
-          with open(file_path, "r") as f:
-              content = f.read()
 
-          if "</application>" in content:
-              new_content = content.replace("</application>", f"{service_xml}\n    </application>")
-              with open(file_path, "w") as f:
-                  f.write(new_content)
-              print("✅ SERVIÇO INJETADO COM SUCESSO NO TEMPLATE CLONADO!")
-          else:
-              print("❌ ERRO: Tag </application> nao encontrada no template!")
+          for file_path in files:
+              with open(file_path, "r") as f:
+                  content = f.read()
+
+              if "</application>" in content and "NotificationReceiver" not in content:
+                  new_content = content.replace("</application>", f"{service_xml}\n    </application>")
+                  with open(file_path, "w") as f:
+                      f.write(new_content)
+                  print(f"✅ SERVIÇO INJETADO COM SUCESSO EM: {file_path}")
           '
 
       # 3. Compila o APK usando o p4a.source_dir configurado no spec
