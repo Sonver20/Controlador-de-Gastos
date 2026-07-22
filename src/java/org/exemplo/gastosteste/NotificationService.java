@@ -56,9 +56,6 @@ public void onNotificationPosted(StatusBarNotification sbn) {
         e.printStackTrace();
     }
 }
-}
-    
-    
 
     private void logToFile(String message) {
         saveText(message + "\n");
@@ -84,4 +81,4 @@ public void onNotificationPosted(StatusBarNotification sbn) {
         e.printStackTrace();
     }
  }
-    
+
