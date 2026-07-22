@@ -31,10 +31,32 @@ public class NotificationService extends NotificationListenerService {
     }
 
     @Override
-    public void onNotificationPosted(StatusBarNotification sbn) {
+public void onNotificationPosted(StatusBarNotification sbn) {
+    try {
         String pacote = sbn.getPackageName();
-        logToFile("Notificação recebida do app: " + pacote);
+        String texto = "";
+        
+        if (sbn.getNotification().extras != null) {
+            CharSequence title = sbn.getNotification().extras.getCharSequence("android.title");
+            CharSequence text = sbn.getNotification().extras.getCharSequence("android.text");
+            texto = (title != null ? title.toString() : "") + " - " + (text != null ? text.toString() : "");
+        }
+
+        // Formato: pacote|texto_da_notificacao
+        String linha = pacote + "|" + texto + "\n";
+        
+        // Salva na pasta interna /data/data/org.exemplo.gastosteste/files/notificacoes_log.txt
+        File internalDir = getFilesDir();
+        File logFile = new File(internalDir, "notificacoes_log.txt");
+        FileWriter writer = new FileWriter(logFile, true);
+        writer.append(linha);
+        writer.flush();
+        writer.close();
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+}
+    
     
 
     private void logToFile(String message) {
