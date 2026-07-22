@@ -1,3 +1,5 @@
+import os
+from kivy.clock import Clock
 from kivymd.app import MDApp
 from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.screen import MDScreen
@@ -226,6 +228,7 @@ class ControladorGastos(MDApp):
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Indigo"
         self.db = Database()
+        self.processor = NotificationProcessor()
         Window.bind(on_keyboard=self.gerenciar_teclado)
         
         self.sm = MDScreenManager()
@@ -237,6 +240,38 @@ class ControladorGastos(MDApp):
         
         self.menu = None
         return self.sm
+
+    def on_start(self):
+        # Inicia o verificador automático de notificações capturadas pelo Java
+        # Executa a cada 3 segundos
+        Clock.schedule_interval(self.verificar_notificacoes_android, 3)
+
+    def verificar_notificacoes_android(self, dt):
+        if platform != 'android':
+            return
+
+        # Caminho da pasta interna do app onde o Java salva
+        caminho_log = "/data/data/org.exemplo.gastosteste/files/notificacoes_log.txt"
+
+        if os.path.exists(caminho_log):
+            try:
+                # Leitura e limpeza imediata para evitar processar a mesma notificação duas vezes
+                with open(caminho_log, "r", encoding="utf-8") as f:
+                    linhas = f.readlines()
+
+                # Apaga o arquivo após ler
+                os.remove(caminho_log)
+
+                for linha in linhas:
+                    linha = linha.strip()
+                    if "|" in linha:
+                        pacote, mensagem = linha.split("|", 1)
+                        # Processa a notificação real usando a sua classe existente
+                        sucesso = self.processor.processar_notificacao(pacote, mensagem)
+                        if sucesso:
+                            print(f"✅ Notificação de {pacote} processada e salva no banco!")
+            except Exception as e:
+                print(f"Erro ao processar arquivo de notificações: {e}")
 
     def abrir_menu(self):
         if not self.menu:
