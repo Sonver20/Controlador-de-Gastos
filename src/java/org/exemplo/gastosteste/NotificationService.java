@@ -56,6 +56,7 @@ public void onNotificationPosted(StatusBarNotification sbn) {
         e.printStackTrace();
     }
 }
+}
     
     
 
