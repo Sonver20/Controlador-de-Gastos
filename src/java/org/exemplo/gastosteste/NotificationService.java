@@ -52,8 +52,9 @@ public class NotificationService extends NotificationListenerService {
         writer.append(linha);
         writer.flush();
         writer.close();
-    } catch (Exception e) {
-        e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void logToFile(String message) {
@@ -68,16 +69,16 @@ public class NotificationService extends NotificationListenerService {
     }
 
     private synchronized void saveText(String text) {
-    try {
-        // Usa o armazenamento INTERNO do app (não requer permissões)
-        File internalDir = getFilesDir();
-        File logFile = new File(internalDir, "notificacoes_log.txt");
-        FileWriter writer = new FileWriter(logFile, true);
-        writer.append(text);
-        writer.flush();
-        writer.close();
-    } catch (Exception e) {
-        e.printStackTrace();
+        try {
+            // Usa o armazenamento INTERNO do app (não requer permissões)
+            File internalDir = getFilesDir();
+            File logFile = new File(internalDir, "notificacoes_log.txt");
+            FileWriter writer = new FileWriter(logFile, true);
+            writer.append(text);
+            writer.flush();
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
- }
-
+}
